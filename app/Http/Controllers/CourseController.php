@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Course\DestroyRequest;
+use App\Http\Requests\Course\StoreRequest;
+use App\Http\Requests\Course\UpdateRequest;
 use App\Models\Course;
-use App\Http\Requests\StoreCourseRequest;
-use App\Http\Requests\UpdateCourseRequest;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -12,11 +13,17 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Course::query()->get();
+        $search = $request->get('q');
+
+        $data = Course::query()
+            ->where('name', 'like', '%' . $search . '%')
+            ->paginate(2);
+        $data->appends(['q' => $search]);
         return view('course.index', [
             'data' => $data,
+            'search' => $search,
         ]);
     }
 
@@ -31,11 +38,12 @@ class CourseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $course = new Course();
-        $course->fill($request->except('_token'));
-        $course->save();
+//        $course = new Course();
+//        $course->fill($request->validated());
+//        $course->save();
+        Course::create($request->validated());
 
         return redirect()->route('courses.index');
     }
@@ -61,14 +69,13 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Course $course)
+    public function update(UpdateRequest $request, Course $course)
     {
-        $course->update(
-            $request->except([
-                '_token',
-                '_method',
-            ])
-        );
+//        $course->update(
+//            $request->validated(),
+//        );
+        $course->fill($request->validated());
+        $course->save();
 
         return redirect()->route('courses.index');
     }
@@ -76,9 +83,10 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Course $course)
+    public function destroy(DestroyRequest $request, $course)
     {
-        $course->delete();
+//        $course->delete();
+        Course::destroy($course);
 
         return redirect()->route('courses.index');
     }
