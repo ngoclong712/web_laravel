@@ -1,46 +1,60 @@
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+@extends('layout.master')
+@section('content')
+<div class="card">
+    @if ($errors->any())
+    <div class="card-header">
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
     </div>
-@endif
-<a href="{{ route('courses.create') }}">
-    Add Course
-</a>
-<table border="1" width="100%">
-    <caption>
-        <form>
-            Search: <input type="search" name="q" value="{{ $search }}">
+    @endif
+    <div class="card-body">
+        <a href="{{ route('courses.create') }}" class="btn btn-success">
+            Add Course
+        </a>
+        <form class="float-right form-group form-inline">
+            <label class="mr-2">
+                Search:
+            </label>
+            <input type="search" name="q" value="{{ $search }}" class="form-control">
         </form>
-    </caption>
-    <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Created At</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-    @foreach($data as $each)
-        <tr>
-            <td>{{ $each->id }}</td>
-            <td>{{ $each->name }}</td>
-            <td>{{ $each->year_created_at }}</td>
-            <td>
-                <a href="{{ route('courses.edit', $each) }}">
-                    Edit
-                </a>
-            </td>
-            <td>
-                <form action="{{ route('courses.destroy', $each) }}" method="post">
-                    @csrf
-                    @method('DELETE')
-                    <button>Delete</button>
-                </form>
-            </td>
-        </tr>
-    @endforeach
-</table>
-{{ $data->links() }}
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Created At</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            @foreach($data as $each)
+                <tr>
+                    <td>{{ $each->id }}</td>
+                    <td>{{ $each->name }}</td>
+                    <td>{{ $each->year_created_at }}</td>
+                    <td>
+                        <a href="{{ route('courses.edit', $each) }}" class="btn btn-primary">
+                            Edit
+                        </a>
+                    </td>
+                    <td>
+                        <form action="{{ route('courses.destroy', $each) }}" method="post">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </table>
+        <nav>
+            <ul class="pagination pagination-rounded mb-0">
+                {{ $data->links() }}
+            </ul>
+        </nav>
+    </div>
+</div>
+@endsection

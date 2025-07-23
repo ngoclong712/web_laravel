@@ -12,3 +12,7 @@ Route::resource('courses', CourseController::class)->except('show');
 //    Route::get('/edit/{course}', [CourseController::class, 'edit'])->name('edit');
 //    Route::put('/update/{course}', [CourseController::class, 'update'])->name('update');
 //});
+
+Route::get('test', function (){
+    return view('layout.master');
+});
