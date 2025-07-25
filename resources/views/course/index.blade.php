@@ -4,6 +4,7 @@
         href="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.3.2/b-3.2.4/b-colvis-3.2.4/b-html5-3.2.4/b-print-3.2.4/date-1.5.6/fc-5.0.4/fh-4.0.3/r-3.0.5/rg-1.5.2/sc-2.4.3/sb-1.8.3/sl-3.0.1/datatables.min.css"
         rel="stylesheet" integrity="sha384-42430TjKyOPA87+vicdKtfZ85Rbh7Bq8VBfSp040ZtbSaqy+9JZlS5wU0ZHveQqF"
         crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 @section('content')
     <div class="card">
@@ -22,6 +23,9 @@
             <a href="{{ route('courses.create') }}" class="btn btn-success">
                 Add Course
             </a>
+            <div class="form-group">
+                <select name="" id="select-name"></select>
+            </div>
             <table class="table table-striped" id="table-index">
                 <thead>
                 <tr>
@@ -47,17 +51,42 @@
         src="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.3.2/b-3.2.4/b-colvis-3.2.4/b-html5-3.2.4/b-print-3.2.4/date-1.5.6/fc-5.0.4/fh-4.0.3/r-3.0.5/rg-1.5.2/sc-2.4.3/sb-1.8.3/sl-3.0.1/datatables.min.js"
         integrity="sha384-uvQAFKMD9ZdyMnmeLv0J3G6tCRdisqn+sTv9jszBCD3BR0OqOFCKYEZcqxnnLM4Y"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(function () {
+            $("#select-name").select2({
+              ajax: {
+                url: "{{ route('courses.api.name') }}",
+                dataType: 'json',
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                  };
+                },
+                processResults: function (data, params) {
+                  return {
+                    results: $.map(data, function (item){
+                        return {
+                            text: item.name,
+                            id: item.name
+                        }
+                    })
+                  };
+                },
+              },
+              placeholder: 'Search for a name',
+              allowClear:true,
+            });
             let table = $('#table-index').DataTable({
                 layout: {
-                    topStart: ['buttons','pageLength'],
-                    topEnd: 'search',
+                    topStart: ['pageLength'],
+                    topEnd: 'buttons',
                     bottomStart: 'info',
                     bottomEnd: 'paging'
                 },
                 columnDefs: [
-                    { className: 'not-export', 'target': [ 3, 4 ]}
+                    { className: 'not-export', 'target': [ 3, 4 ]},
+                    { className: 'text-left', targets: 2}
                 ],
                 buttons: [
                     {
@@ -127,6 +156,9 @@
                         },
                     }
                 ]
+            });
+            $('#select-name').change( function () {
+                table.column(1).search(this.value).draw();
             });
             $(document).on('click', '.btn-delete', function(){
                 let form = $(this).parents('form');

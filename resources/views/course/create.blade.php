@@ -1,3 +1,5 @@
+@extends('layout.master')
+@section('content')
 <form action="{{ route('courses.store') }}" method="post">
     @csrf
     Name
@@ -10,3 +12,4 @@
     <br>
     <button>Add</button>
 </form>
+@endsection

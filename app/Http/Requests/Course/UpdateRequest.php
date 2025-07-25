@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
                 'bail',
                 'required',
                 'string',
-                Rule::unique(Course::class, 'name')->ignore($this->course->id),
+                Rule::unique(Course::class, 'name')->ignore($this->id),
             ]
         ];
     }

@@ -6,14 +6,30 @@ use App\Http\Requests\Course\DestroyRequest;
 use App\Http\Requests\Course\StoreRequest;
 use App\Http\Requests\Course\UpdateRequest;
 use App\Models\Course;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Yajra\DataTables\DataTables;
 
 class CourseController extends Controller
 {
+    private Builder $model;
+    public function __construct()
+    {
+        $this->model = (new Course())->query();
+        $name = Route::currentRouteName();
+        $arr = explode('.', $name);
+        $arr = array_map('ucfirst', $arr);
+        $arr = implode(' - ', $arr);
+        View::share('title', $arr);
+    }
     public function api()
     {
-        return Datatables::of(Course::query())
+        return Datatables::of($this->model)
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where('name', 'like', "%{$keyword}%");
+            })
             ->editColumn('created_at', function ($object) {
                 return $object->year_created_at;
             })
@@ -33,6 +49,17 @@ class CourseController extends Controller
         return view('course.index');
     }
 
+    public function apiName(Request $request)
+    {
+        $q = $request->get('q');
+        return $this->model
+            ->where('name', 'like', '%' . "$q" . '%')
+            ->get([
+            'id',
+            'name',
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -49,7 +76,7 @@ class CourseController extends Controller
 //        $course = new Course();
 //        $course->fill($request->validated());
 //        $course->save();
-        Course::create($request->validated());
+        $this->model->create($request->validated());
 
         return redirect()->route('courses.index');
     }
@@ -75,13 +102,24 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, Course $course)
+    public function update(UpdateRequest $request, $courseId)
     {
-//        $course->update(
-//            $request->validated(),
+        //validate
+//        $this->model->where('id', $courseId)
+//            ->where('user', auth()->id)
+//            ->firstOrFail();
+
+//        Another way
+//        $this->model->where('id', $courseId)->update(
+//            $request->validated()
 //        );
-        $course->fill($request->validated());
-        $course->save();
+//        $this->model->update(
+//          $request->validated();
+//        );
+        $object = $this->model->findOrFail($courseId);
+
+        $object->fill($request->validated());
+        $object->save();
 
         return redirect()->route('courses.index');
     }
@@ -89,10 +127,10 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DestroyRequest $request, $course)
+    public function destroy(DestroyRequest $request, $courseId)
     {
-//        $course->delete();
-        Course::destroy($course);
+//        $this->model->find($courseId)->delete();
+        $this->model->where('id', $courseId)->delete();
 
         $arr = [];
         $arr['status'] = true;

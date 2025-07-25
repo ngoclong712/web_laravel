@@ -13,6 +13,7 @@ Route::resource('courses', CourseController::class)->except('show');
 //    Route::put('/update/{course}', [CourseController::class, 'update'])->name('update');
 //});
 Route::get('courses/api', [CourseController::class, 'api'])->name('courses.api');
+Route::get('courses/api/name', [CourseController::class, 'apiName'])->name('courses.api.name');
 Route::get('test', function (){
     return view('layout.master');
 });

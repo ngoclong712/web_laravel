@@ -1,3 +1,5 @@
+@extends('layout.master')
+@section('content')
 <form action="{{ route('courses.update', $each) }}" method="post">
     @csrf
     @method('PUT')
@@ -11,3 +13,4 @@
     <br>
     <button>Update</button>
 </form>
+@endsection
