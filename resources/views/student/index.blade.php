@@ -10,17 +10,31 @@
     <div class="card">
         <div class="card-body">
             <a href="{{ route('students.create') }}" class="btn btn-success">
-                Add Course
+                Add Student
             </a>
             <div class="form-group">
-                <select name="" id="select-name"></select>
+                <select name="" id="select-course-name"></select>
+            </div>
+            <div class="form-group">
+                <select id="select-status" class="form-control">
+                    <option value='0'>All Status</option>
+                    @foreach($arrStudentStatus as $key => $value)
+                        <option value="{{ $value }}">
+                            {{ $key }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
             <table class="table table-striped" id="table-index">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>Name</th>
+                    <th>Gender</th>
                     <th>Age</th>
+                    <th>Status</th>
+                    <th>Avatar</th>
+                    <th>Course Name</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
@@ -43,16 +57,39 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(function () {
+            $("#select-course-name").select2({
+                ajax: {
+                    url: "{{ route('courses.api.name') }}",
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                        };
+                    },
+                    processResults: function (data, params) {
+                        return {
+                            results: $.map(data, function (item){
+                                return {
+                                    text: item.name,
+                                    id: item.name
+                                }
+                            })
+                        };
+                    },
+                },
+                placeholder: 'Search for a status',
+                allowClear:true,
+            });
             let table = $('#table-index').DataTable({
                 layout: {
-                    topStart: ['pageLength'],
-                    topEnd: 'buttons',
+                    topStart: ['buttons','pageLength'],
+                    topEnd: 'search',
                     bottomStart: 'info',
                     bottomEnd: 'paging'
                 },
                 columnDefs: [
                     { className: 'not-export', 'target': [ 3, 4 ]},
-                    { className: 'text-left', targets: 2}
+                    { className: 'text-left', targets: [2, 1]}
                 ],
                 buttons: [
                     {
@@ -94,7 +131,25 @@
                 columns: [
                     { data: 'id', name: 'id' },
                     { data: 'name', name: 'name' },
+                    { data: 'gender', name: 'gender' },
                     { data: 'age', name: 'age' },
+                    { data: 'status', name: 'status' },
+                    {
+                        data: 'avatar',
+                        name: 'avatar',
+                        target: 5,
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row, meta) {
+                            if(!data) {
+                                return '';
+                            }
+                            else {
+                                return `<img src="{{ public_path() }}/${data}">`;
+                            }
+                        }
+                    },
+                    { data: 'course_name', name: 'course_name' },
                     {
                         data: 'edit',
                         name: 'edit',
@@ -122,6 +177,20 @@
                         },
                     }
                 ]
+            });
+            $('#select-course-name').change( function () {
+                table.column(6).search($(this).val()).draw();
+            });
+            $('#select-status').change( function () {
+                let value = $(this).val();
+                table.column(4).search(value).draw();
+                // let value = $(this).val();
+                // if(value === '0') {
+                //     table.column(4).search('').draw();
+                // }
+                // else {
+                //    table.column(4).search(value).draw();
+                // }
             });
             $(document).on('click', '.btn-delete', function(){
                 let form = $(this).parents('form');
