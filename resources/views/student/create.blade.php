@@ -1,6 +1,6 @@
 @extends('layout.master')
 @section('content')
-<form action="{{ route('students.store') }}" method="post">
+<form action="{{ route('students.store') }}" method="post" enctype="multipart/form-data">
     @csrf
     <div class="form-group">
         <lable>Name</lable>
@@ -28,6 +28,9 @@
             <option value="{{ $course->id }}">{{ $course->name }}</option>
         @endforeach
     </select>
+    <br>
+    Avatar
+    <input type="file" name="avatar">
     <br>
     <button>Add</button>
 </form>

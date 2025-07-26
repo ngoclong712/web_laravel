@@ -26,7 +26,7 @@ class CourseController extends Controller
     }
     public function api()
     {
-        return Datatables::of($this->model)
+        return Datatables::of($this->model->withCount('students'))
             ->filterColumn('name', function ($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             })

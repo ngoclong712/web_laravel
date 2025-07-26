@@ -18,4 +18,9 @@ class Course extends Model
     {
         return $this->created_at->format('Y');
     }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
 }

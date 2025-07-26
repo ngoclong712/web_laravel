@@ -19,7 +19,7 @@ final class StudentsStatusEnum extends Enum
     {
         return [
             'Enrolled' => self::ENROLLED,
-            'Dropped' => self::DROPPED_OUT,
+            'Dropped out' => self::DROPPED_OUT,
             'On Leave' => self::ON_LEAVE,
         ];
     }
