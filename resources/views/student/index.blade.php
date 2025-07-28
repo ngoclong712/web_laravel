@@ -36,7 +36,9 @@
                     <th>Avatar</th>
                     <th>Course Name</th>
                     <th>Edit</th>
-                    <th>Delete</th>
+                    @if(checkSuperAdmin())
+                        <th>Delete</th>
+                    @endif
                 </tr>
                 </thead>
             </table>
@@ -162,6 +164,7 @@
                             </a>`
                         },
                     },
+                    @if(checkSuperAdmin())
                     {
                         data: 'destroy',
                         name: 'destroy',
@@ -176,6 +179,7 @@
                             </form>`
                         },
                     }
+                    @endif
                 ]
             });
             $('#select-course-name').change( function () {

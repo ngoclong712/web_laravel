@@ -32,9 +32,11 @@
                     <th>#</th>
                     <th>Name</th>
                     <th>Number of Students</th>
-                    <th>Created At</th>
+                    <th style="text-align: left !important;">Created At</th>
                     <th>Edit</th>
-                    <th>Delete</th>
+                    @if(checkSuperAdmin())
+                        <th>Delete</th>
+                    @endif
                 </tr>
                 </thead>
             </table>
@@ -87,7 +89,10 @@
                 },
                 columnDefs: [
                     { className: 'not-export', 'target': [ 3, 4 ]},
-                    { className: 'text-left', targets: 2}
+                    {
+                        className: 'text-left',
+                        targets: [2, 3],
+                    }
                 ],
                 buttons: [
                     {
@@ -129,7 +134,11 @@
                 columns: [
                     { data: 'id', name: 'id' },
                     { data: 'name', name: 'name' },
-                    { data: 'students_count', name: 'number_students' },
+                    {
+                        data: 'students_count',
+                        name: 'number_students',
+                        orderable: false
+                    },
                     { data: 'created_at', name: 'created_at' },
                     {
                         data: 'edit',
@@ -143,6 +152,7 @@
                             </a>`
                         },
                     },
+                    @if(checkSuperAdmin())
                     {
                         data: 'destroy',
                         name: 'destroy',
@@ -157,6 +167,7 @@
                             </form>`
                         },
                     }
+                    @endif
                 ]
             });
             $('#select-name').change( function () {

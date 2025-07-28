@@ -15,8 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
         Course::factory()->count(10)->create();
         Student::factory()->count(500)->create();
+        $this->call([
+            UserSeeder::class,
+        ]);
     }
 }
