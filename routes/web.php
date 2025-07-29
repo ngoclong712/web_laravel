@@ -5,10 +5,14 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use App\Http\Middleware\CheckLoginMiddleware;
 use App\Http\Middleware\CheckSuperAdminMiddleware;
+use App\Models\User;
+use App\Notifications\UserRegisteredNotificationMail;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('process_login');
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'processRegister'])->name('process_register');
 Route::group([
     'middleware' => CheckLoginMiddleware::class,
 ], function () {
@@ -35,6 +39,9 @@ Route::group([
     });
 });
 
-Route::get('test', function (){
-    return view('layout.master');
+Route::get('/test-mail', function () {
+    $user = User::first(); // hoặc tạo thủ công nếu chưa có user
+
+    $notification = new UserRegisteredNotificationMail($user);
+    return $notification->toMail($user)->render();
 });
